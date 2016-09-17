@@ -78,7 +78,10 @@ def getClasses(dirname,cachedir):
                 if os.path.exists(cachename+".npy"):
                     imagevec = numpy.load(cachename+".npy")
                 else:
-                    imagearr = misc.imread(os.path.join(dirname,classdir,image))
+                    try:
+                        imagearr = misc.imread(os.path.join(dirname,classdir,image))
+                    except:
+                        continue
                     imagevec = vectorize(imagearr)
                     if not os.path.isdir(os.path.join(cachedir,classdir)):
                         os.mkdir(os.path.join(os.path.join(cachedir,classdir)))
