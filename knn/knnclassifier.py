@@ -1,29 +1,9 @@
 import os
 
 from sklearn import neighbors
-from knn import vectorize
+from util import vectorize, getClasses
 import numpy
 from scipy import misc
-
-def getClasses(dirname):
-    classes = []
-    labels = []
-    data = []
-    i = 0
-    for classdir in os.listdir(dirname):
-        if os.path.isdir(os.path.join(dirname,classdir)):
-            classes.append(classdir)
-            for image in os.listdir(os.path.join(dirname,classdir)):
-                imagearr = misc.imread(os.path.join(dirname,classdir,image))
-                imagevec = vectorize.convertImageToVector(imagearr)
-                labels.append(i)
-                data.append(imagevec)
-            i += 1
-
-    data = numpy.array(data)
-    shape = data.shape
-    data = data.reshape((shape[0],shape[1]))
-    return classes, data, labels
 
 class KNNClassifier:
     def __init__(self,trainingdir,k=3):
@@ -48,5 +28,5 @@ class KNNClassifier:
         return highest_class
 
     def classifyImage(self, imagearr):
-        imagevec = vectorize.convertImageToVector(imagearr)
-        self.classifyVec(imagevec)
+        imagevec = vectorize(imagearr)
+        return self.classifyVec(imagevec)

@@ -1,13 +1,14 @@
 from flask import Flask, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import os
-from classifierFactory import getClassifier
+from classifierFactory import getRFClassifier
+from scipy import misc
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+classifier = getRFClassifier()
 
-classifier = getClassifier()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -17,10 +18,12 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-
-@app.route('/classify/<filepath>', methods=['GET', 'POST'])
+@app.route('/classify/<filepath>', methods=['GET'])
 def classifyImage(filepath):
-    filename = secure_filename(filepath)
+    filename = os.path.join("uploads",secure_filename(filepath))
+    imagearr = misc.imread(filename)
+    imclass = classifier.classifyImage(imagearr)
+    return imclass
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -38,8 +41,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
+            return redirect("classify/"+filename)
     return '''
     <!doctype html>
     <title>Upload new File</title>
