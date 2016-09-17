@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, flash
+from flask import Flask, request, redirect, url_for, flash, render_template
 from werkzeug.utils import secure_filename
 import os
 from classifierFactory import getRFClassifier
@@ -23,7 +23,7 @@ def classifyImage(filepath):
     filename = os.path.join("uploads",secure_filename(filepath))
     imagearr = misc.imread(filename)
     imclass = classifier.classifyImage(imagearr)
-    return imclass
+    return render_template('classification.html',imclass=imclass)
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -42,15 +42,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect("classify/"+filename)
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
-    '''
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run('0.0.0.0',1708)
