@@ -1,7 +1,7 @@
 import os
 
 from sklearn import neighbors
-from util import vectorize, getClasses
+from util import imagevectorize, getClasses
 import numpy
 from scipy import misc
 
@@ -30,5 +30,5 @@ class KNNClassifier:
         return highest_class
 
     def classifyImage(self, imagearr):
-        imagevec = vectorize(imagearr)
+        imagevec = imagevectorize(imagearr)
         return self.classifyVec(imagevec)

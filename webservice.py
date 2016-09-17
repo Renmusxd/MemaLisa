@@ -7,7 +7,7 @@ from scipy import misc
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-classifier = getKNNClassifier()
+classifier = getRFClassifier()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
