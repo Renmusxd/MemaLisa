@@ -3,21 +3,19 @@ import os
 from scipy import misc, stats
 
 RATIO = (36,48)
-MULT = 2
+MULT = 3
 
 IMAGE_X = RATIO[0] * MULT
 IMAGE_Y = RATIO[1] * MULT
 
-ADJ_MAT = []
-for i in [-1,0,1]:
-    for j in [-1,0,1]:
-        if not (j==0 and i==0):
-            ADJ_MAT.append((i,j))
+FEATURES = None
 
-def vectorize(imagearr):
+def imagevectorize(imagearr):
     return convertImageToVector(imagearr)
 
 def convertImageToVector(imagearr):
+    global FEATURES
+
     shape = imagearr.shape
     if IMAGE_X > IMAGE_Y and shape[0] < shape[1]:
         imagearr = imagearr.transpose()
@@ -25,34 +23,120 @@ def convertImageToVector(imagearr):
         imagearr = imagearr.transpose()
 
     imagearr = misc.imresize(imagearr,(IMAGE_X,IMAGE_Y))
-
     shape = imagearr.shape
 
-    # "Gradient of image"
-    tot = 0
-    for i in range(shape[0]):
-        for j in range(shape[1]):
-            tot += meanPixDist(i,j,imagearr)
-    tot /= float(shape[0]*shape[1])
+    vec = []
 
+    # "Gradient of image"
+    for fnum in range(2,5):
+        tot = 0
+        size = 2**fnum
+        for i in range(int(shape[0]/size)):
+            for j in range(int(shape[1]/size)):
+                tot += meanPixDist(i,j,imagearr,size)
+        tot /= float(shape[0]*shape[1])
+        vec.append(tot)
+
+    # Row differences
+    for numcuts in range(2,5):
+        vsize = int(shape[1]/numcuts)
+        colorscheme = []
+        for cut in range(numcuts):
+            basecol = imagearr[0,cut*vsize - 1]
+            colorscheme.append(averagecolRect(
+                (0,cut*vsize),(shape[0],(cut+1)*vsize),
+                imagearr,basecol))
+        totdistsqrd = 0
+        maxdist = 0
+        for i in range(len(colorscheme)):
+            for j in range(len(colorscheme)):
+                d = colorscheme[i] - colorscheme[j]
+                if type(d) == numpy.uint8:
+                    dsqrd = d ** 2
+                else:
+                    dsqrd = sum([x ** 2 for x in d])
+                if dsqrd > maxdist:
+                    maxdist = dsqrd
+                totdistsqrd += dsqrd
+        vec.append(totdistsqrd)
+        vec.append(maxdist)
+
+    # Col differences
+    for numcuts in range(2, 5):
+        hsize = int(shape[0] / numcuts)
+        colorscheme = []
+        for cut in range(numcuts):
+            basecol = imagearr[cut * hsize - 1, 0]
+            colorscheme.append(averagecolRect(
+                (cut * hsize, 0), ((cut + 1) * hsize, shape[1]),
+                imagearr, basecol))
+        totdistsqrd = 0
+        maxdist = 0
+        for i in range(len(colorscheme)):
+            for j in range(len(colorscheme)):
+                d = colorscheme[i] - colorscheme[j]
+                if type(d) == numpy.uint8:
+                    dsqrd = d ** 2
+                else:
+                    dsqrd = sum([x ** 2 for x in d])
+                if dsqrd > maxdist:
+                    maxdist = dsqrd
+                totdistsqrd += dsqrd
+        vec.append(totdistsqrd)
+        vec.append(maxdist)
+
+    # Most common color
     size = 1
     for i in range(len(shape)):
         size *= shape[i]
-    imagearr = imagearr.reshape((size,-1))
-    vec = [stats.mstats.mode(imagearr)[0],tot]
+    imagearrflat = imagearr.reshape((size,-1))
+    vec.append(stats.mstats.mode(imagearrflat)[0])
+
+    # Return vector
+    if FEATURES is None:
+        FEATURES = len(vec)
+    else:
+        assert FEATURES == len(vec)
+    vec = numpy.array(vec).reshape(1,FEATURES)
     return vec
 
-def meanPixDist(i,j,imgarr):
-    selcol = imgarr[i,j]
+def inrange(x,y,imgarr):
     shape = imgarr.shape
+    return (0<=x<shape[0]) and (0<=y<shape[1])
+
+
+def averagecolRect(start,end,imgarr,basecol):
+    si, sj = start
+    fi, fj = end
+
+    ctot = 0*basecol
+    counts = 0
+    for dx in range(si, fi):
+        for dy in range(sj, fj):
+            if inrange(dx, dy, imgarr):
+                ctot += imgarr[dx,dy]
+                counts += 1
+    if counts>0:
+        return ctot / counts
+    else:
+        return basecol
+
+def averagecol(i,j,imgarr,size,basecol):
+    halfsize = int(size / 2)
+    return averagecolRect((i-halfsize,j-halfsize),
+                          (i+halfsize,j+halfsize),
+                          imgarr,basecol)
+
+def meanPixDist(i,j,imgarr, size):
+    selcol = averagecol(i,j,imgarr,size,imgarr[i,j])
 
     tot = 0
     counted = 0
-    for adj in ADJ_MAT:
-        di = i+adj[0]
-        dj = j+adj[1]
-        if (0<=di<shape[0]) and (0<=dj<shape[1]):
-            dcol = imgarr[di,dj]
+    for dx in [-1,0,1]:
+        for dy in [-1,0,1]:
+            if dx==0 and dy==0: continue
+
+            dcol = averagecol(i + size*dx, j + size*dy, imgarr, size, selcol)
             deltcol = dcol - selcol
             if type(deltcol) == numpy.uint8:
                 dsquared = deltcol ** 2
@@ -74,24 +158,36 @@ def getClasses(dirname,cachedir):
             print("[*] Loading from {}".format(classdir))
             classes.append(classdir)
             for image in os.listdir(os.path.join(dirname,classdir)):
+                print("[*]\tLoading from {}".format(image))
                 cachename = os.path.join(cachedir,classdir,image)
+                imagevec = None
+
                 if os.path.exists(cachename+".npy"):
                     imagevec = numpy.load(cachename+".npy")
-                else:
+
+                if FEATURES is None:
+                    print("[*] Loading new feature vector for size calculations")
+                    arr = numpy.zeros((3,3,3))
+                    imagevectorize(arr)
+
+                if imagevec is None or imagevec.shape[1]!=FEATURES:
                     try:
                         imagearr = misc.imread(os.path.join(dirname,classdir,image))
                     except:
                         continue
-                    imagevec = vectorize(imagearr)
+
+                    imagevec = imagevectorize(imagearr)
+
                     if not os.path.isdir(os.path.join(cachedir,classdir)):
                         os.mkdir(os.path.join(os.path.join(cachedir,classdir)))
                     numpy.save(cachename,imagevec)
+
                 labels.append(i)
                 data.append(imagevec)
             i += 1
 
     data = numpy.array(data)
     shape = data.shape
-    data = data.reshape((shape[0],shape[1]))
+    data = data.reshape((shape[0],shape[2]))
     print("[+] Loaded {} objects into memory".format(len(labels)))
     return classes, data, labels

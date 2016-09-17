@@ -1,7 +1,7 @@
 import os
 
 from sklearn.ensemble import RandomForestClassifier
-from util import vectorize, getClasses
+from util import imagevectorize, getClasses
 
 class RFClassifier:
     def __init__(self,trainingdir,cachedir='cache',k=3):
@@ -17,5 +17,5 @@ class RFClassifier:
         return self.classes[ind[0]]
 
     def classifyImage(self, imagearr):
-        imagevec = vectorize(imagearr)
+        imagevec = imagevectorize(imagearr)
         return self.classifyVec(imagevec)
