@@ -7,9 +7,11 @@ from scipy import misc
 
 class KNNClassifier:
     def __init__(self,trainingdir,k=3):
+        print("[*] Creating KNN Classifier...")
         self.classes, self.data, self.labels = getClasses(trainingdir)
         self.clasifier = neighbors.BallTree(self.data)
         self.k = k
+        print("[+] Classifier created!")
 
     def classifyVec(self, vec):
         dist, ind = self.clasifier.query(vec,k=self.k)

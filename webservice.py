@@ -1,13 +1,13 @@
 from flask import Flask, request, redirect, url_for, flash, render_template
 from werkzeug.utils import secure_filename
 import os
-from classifierFactory import getRFClassifier
+from classifierFactory import *
 from scipy import misc
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-classifier = getRFClassifier()
+classifier = getKNNClassifier()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
