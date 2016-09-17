@@ -9,7 +9,6 @@ IMAGE_Y = RATIO[1] * MULT
 
 def convertImageToVector(imagearr):
     shape = imagearr.shape
-
     if IMAGE_X > IMAGE_Y and shape[0] < shape[1]:
         imagearr = imagearr.transpose()
     elif IMAGE_Y > IMAGE_X and shape[1] < shape[0]:
@@ -17,7 +16,9 @@ def convertImageToVector(imagearr):
 
     imagearr = misc.imresize(imagearr,(IMAGE_X,IMAGE_Y))
 
-    imagearr = imagearr.reshape((shape[0]*shape[1]*shape[2],))
+    shape = imagearr.shape
+
+    imagearr = imagearr.reshape((shape[0]*shape[1]*shape[2],-1))
     vec = [stats.mstats.mode(imagearr)[0],0]
     return vec
 

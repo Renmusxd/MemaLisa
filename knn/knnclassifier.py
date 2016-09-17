@@ -50,8 +50,3 @@ class KNNClassifier:
     def classifyImage(self, imagearr):
         imagevec = vectorize.convertImageToVector(imagearr)
         self.classifyVec(imagevec)
-
-
-knn = KNNClassifier("../data")
-print(knn.classifyVec(numpy.array([200,0]).reshape(1,-1)))
-
