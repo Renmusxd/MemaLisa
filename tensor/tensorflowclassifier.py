@@ -115,7 +115,7 @@ def do_eval(sess,
 # Get the sets of images and labels for training, validation, and
 train_images = []
 filenames = ['data/white/01.jpg', 'data/black/02.jpg', 'data/white/03.jpg',
-             'data/black/04.jpg','data/white/05.jpg', 'data/black/06.jpg',
+             'data/black/04.jpg', 'data/white/05.jpg', 'data/black/06.jpg',
              'data/white/07.jpg', 'data/black/08.jpg']
 
 for filename in filenames:
