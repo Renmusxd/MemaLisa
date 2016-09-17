@@ -4,9 +4,9 @@ from sklearn.ensemble import RandomForestClassifier
 from util import vectorize, getClasses
 
 class RFClassifier:
-    def __init__(self,trainingdir,k=3):
+    def __init__(self,trainingdir,cachedir='cache',k=3):
         print("[*] Creating RFClassifier...")
-        self.classes, self.data, self.labels = getClasses(trainingdir)
+        self.classes, self.data, self.labels = getClasses(trainingdir,cachedir)
         self.clasifier = RandomForestClassifier()
         self.clasifier.fit(self.data, self.labels)
         self.k = k

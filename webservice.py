@@ -17,6 +17,12 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+@app.route('/js/<filepath>', methods=['GET'])
+def getJS(filepath):
+    return redirect(url_for('static', filename='js/'+filepath))
+@app.route('/css/<filepath>', methods=['GET'])
+def getCSS(filepath):
+    return redirect(url_for('static', filename='css/' + filepath))
 
 @app.route('/api/classify/<filepath>', methods=['GET'])
 def classifyImageAPI(filepath):

@@ -6,9 +6,9 @@ import numpy
 from scipy import misc
 
 class KNNClassifier:
-    def __init__(self,trainingdir,k=3):
+    def __init__(self,trainingdir,cachedir='cache',k=3):
         print("[*] Creating KNN Classifier...")
-        self.classes, self.data, self.labels = getClasses(trainingdir)
+        self.classes, self.data, self.labels = getClasses(trainingdir,cachedir)
         self.clasifier = neighbors.BallTree(self.data)
         self.k = k
         print("[+] Classifier created!")

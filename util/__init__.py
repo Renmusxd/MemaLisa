@@ -35,7 +35,10 @@ def convertImageToVector(imagearr):
             tot += meanPixDist(i,j,imagearr)
     tot /= float(shape[0]*shape[1])
 
-    imagearr = imagearr.reshape((shape[0]*shape[1]*shape[2],-1))
+    size = 1
+    for i in range(len(shape)):
+        size *= shape[i]
+    imagearr = imagearr.reshape((size,-1))
     vec = [stats.mstats.mode(imagearr)[0],tot]
     return vec
 
@@ -51,14 +54,16 @@ def meanPixDist(i,j,imgarr):
         if (0<=di<shape[0]) and (0<=dj<shape[1]):
             dcol = imgarr[di,dj]
             deltcol = dcol - selcol
-            dsquared = sum([x**2 for x in deltcol])
+            if type(deltcol) == numpy.uint8:
+                dsquared = deltcol ** 2
+            else:
+                dsquared = sum([x ** 2 for x in deltcol])
             tot += dsquared
             counted += 1
     return tot/float(counted)
 
 
-
-def getClasses(dirname):
+def getClasses(dirname,cachedir):
     print("[*] Loading training data")
     classes = []
     labels = []
@@ -66,10 +71,18 @@ def getClasses(dirname):
     i = 0
     for classdir in os.listdir(dirname):
         if os.path.isdir(os.path.join(dirname,classdir)):
+            print("[*] Loading from {}".format(classdir))
             classes.append(classdir)
             for image in os.listdir(os.path.join(dirname,classdir)):
-                imagearr = misc.imread(os.path.join(dirname,classdir,image))
-                imagevec = vectorize(imagearr)
+                cachename = os.path.join(cachedir,classdir,image)
+                if os.path.exists(cachename+".npy"):
+                    imagevec = numpy.load(cachename+".npy")
+                else:
+                    imagearr = misc.imread(os.path.join(dirname,classdir,image))
+                    imagevec = vectorize(imagearr)
+                    if not os.path.isdir(os.path.join(cachedir,classdir)):
+                        os.mkdir(os.path.join(os.path.join(cachedir,classdir)))
+                    numpy.save(cachename,imagevec)
                 labels.append(i)
                 data.append(imagevec)
             i += 1
