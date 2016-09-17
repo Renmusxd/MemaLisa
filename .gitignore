@@ -3,3 +3,8 @@
 .idea
 **.iml
 *.pyc
+classifierFactory/__pycache__/
+knn/__pycache__/
+randomforest/__pycache__/
+uploads/
+util/__pycache__/
