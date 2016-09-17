@@ -5,7 +5,7 @@ import os
 
 URL = "https://www.google.com/search?hl=en&site=imghp&tbm=isch&source=hp&q="
 URL_PAGE = "&start="
-queries = ["impressionism","baroque", "rococo", "surrealism", "memes"]
+queries = ["baroque+painting", "rococo+painting", "impressionism", "surrealism", "memes"]
 curr_page = 0
 
 for query in queries: 
@@ -20,16 +20,12 @@ for query in queries:
 
 		for i in soup.find_all("img", limit=100):
 			imgs.add(i.get('src'))
-			print(i.get('src'))
 
 		curr_page = len(imgs)
-
-	print(len(imgs))
 
 	os.mkdir("data/"+query)
 
 	for i in range(len(imgs)):
-		#urllib.urlretrieve(imgs.pop(), query+"img-"+i+".jpg")
 		resource = urlopen(imgs.pop())
 		output = open("data/"+query+"/"+query+"-img-"+str(i)+".jpg", "wb")
 		output.write(resource.read())
