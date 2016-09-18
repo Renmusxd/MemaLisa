@@ -166,7 +166,7 @@ def processImage(dirname,classdir,image,cachedir,labels,data,i):
         try:
             imagearr = misc.imread(os.path.join(dirname, classdir, image))
         except:
-            return False
+            return None, None
 
         imagevec = imagevectorize(imagearr)
 
@@ -216,8 +216,10 @@ def getClasses(dirname,cachedir,limit=None):
                 countdown -= 1
                 #function_args.append((dirname,classdir,image,cachedir,labels,data,i))
                 l, v = processImage(dirname,classdir,image,cachedir,labels,data,i)
-                labels.append(l)
-                data.append(v)
+                if l:
+                    labels.append(l)
+                if v:
+                    data.append(v)
             i += 1
 
     # p = multiprocessing.dummy.Pool(24)
