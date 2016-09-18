@@ -1,1 +1,152 @@
-{{ imclass }}
+<!--
+<!DOCTYPE html>
+
+<title>Mema Lisa</title>
+<h1>Upload new File</h1>
+<form action="" method=post enctype=multipart/form-data>
+  <p><input type=file name=file>
+     <input type=submit value=Upload>
+</form> 
+-->
+
+<!DOCTYPE html>
+<!-- Look at: http://bootswatch.com/yeti/#navs -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Mema Lisa</title>
+
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="/css/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+    <div class="modal fade modal-sm" role="dialog" id="feedback">
+        <div class="modal-content" style="background-color: black;">
+          <div class="modal-header">
+            <button type="button" class="close btn-secondary" data-dismiss="modal">x</button>
+            <h3>User Feedback</h3>
+          </div>
+          <div class="modal-body">
+            <p method="post" action='/feedback' name="login_form">
+              <input type="text" class="span3" name="eid" id="email" placeholder="Email" size="30">
+              <p><textarea class="form-control" rows="5" id="comment" placeholder="Comments" cols="29" style="resize: vertical;"></textarea></p>
+                <button type="submit" class="btn-sm btn-secondary" data-dismiss="modal">Send</button>
+            </form>
+          </div>
+        </div>
+    </div>
+
+
+    <body class="full" style="background-color: white; width: 100%">
+        <!-- <nav class="navbar navbar-default"> -->
+        <nav class="navbar navbar-default navbar-fixed-top boxshadow" role="navigation">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">Mema Lisa</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li><a href="#team">Team</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Services <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#cloud">Meme Recognition</a></li>
+                    <li><a href="#distr">Art Classification</a></li>
+                    <li><a href="#chemical">Funny Machine Learning Decisions</a></li>
+                  </ul>
+                </li>
+            </div>
+          </div>
+        </nav>
+
+        <div class="jumbotron" style="background-color:rgba(0, 0, 0, 0); margin-left: 45px;">
+            <h1>Mema Lisa</h1>
+            <h3>For whenever the line between art and meme becomes blurry</h3>
+            <p>Try it out!</p>
+				<UL>
+				<LI>Choose a file to upload! 
+				<LI>Upload it!
+				<LI>See your result: {{ imclass }}
+				</UL>
+
+        </div>
+
+
+        <div style="margin-left: 3%; margin-right: 3%; margin-top: 40%;" id="products">
+            <div class="jumbotron shadow jumbo_floating">
+                <div class="container">
+                    <h1>Services</h1>
+                    <hr>
+                    <div class="row top-buffer">
+                        <div class="col-lg-12">
+                          <h2 id="cloud">Meme Recognition</h2>
+                          <p>For those times when you just want to be hip with the kids </p>
+
+                          <h2 id="distr">Art Classification</h2>
+                          <p>For when you get your Corots, Caillebottes, and Caravaggios all mixed up </p>
+
+                          <h2 id="chemical">Funny Machine Learning Decisions</h2>
+                          <p>DID YOU KNOW: Edward Burne-Jones was a meme-master?? </p>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-left: 3%; margin-right: 3%;" id="team">
+            <div class="jumbotron shadow jumbo_floating">
+                <div class="container">
+                    <h1>Our Team</h1>
+                    <hr>
+                    <div class="row top-buffer">
+                        <div class="col-lg-6">
+                            <div>
+                                <p style="float: left">
+                                <img src="http://i4.dailyrecord.co.uk/incoming/article5451366.ece/ALTERNATES/s615/JS60460810.jpg" style="width:72px;height:72px; padding: 2px">
+                               </p>
+                                <h2>Sumner Hearth</h2>
+                            </div>
+                            <p>Senior Software Engineer</p>
+                            <p> </p>
+                            <div>
+                                <p style="float: left">
+                                <img src="http://yourlighterside.com/wp-content/uploads/2013/07/sleeping-cat-728x728.jpg" style="width:72px;height:72px; padding: 2px">
+                               </p>
+                                <h2>Miranda Hawkins</h2>
+                            </div>
+                            <p>Junior Software Engineer and Comic Relief</p>
+                            <p> </p>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="/js/bootstrap.min.js"></script>
+
+        <script src="/js/main.js"></script>
+    </body>
+<!-- Designed by Sumner Hearth, messed with by Miranda Hawkins -->
+</html>
