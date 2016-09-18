@@ -12,6 +12,7 @@ import MobileCoreServices
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var imageView: UIImageView!
+    var imagelabel: UILabel?
     var newMedia: Bool?
 
     @IBAction func useCamera(sender: AnyObject) {
@@ -29,6 +30,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             self.present(imagePicker, animated: true,
                                        completion: nil)
             newMedia = true
+            if self.imagelabel != nil {
+                self.imagelabel?.isHidden = true
+            }
         }
     }
     
@@ -46,6 +50,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             self.present(imagePicker, animated: true,
                                        completion: nil)
             newMedia = false
+            if self.imagelabel != nil {
+                self.imagelabel?.isHidden = true
+            }
         }
     }
     
@@ -129,27 +136,29 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             let responseString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
                             print("responseString = \(responseString)")
                             
-                            // CGRectMake has been deprecated - and should be let, not var
-                            let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-                            // you will probably want to set the font (remember to use Dynamic Type!)
-                            label.font = UIFont.preferredFont(forTextStyle: .footnote)
-                            // and set the text color too - remember good contrast
-                            label.textColor = .white
-                            // may not be necessary (e.g., if the width & height match the superview)
-                            // if you do need to center, CGPointMake has been deprecated, so use this
-                            label.center = CGPoint(x: 160, y: 284)
-                            // this changed in Swift 3 (much better, no?)
-                            label.textAlignment = .center
-                            label.text = responseString as String?
-                            self.view.addSubview(label)
-                            
+                            DispatchQueue.main.async(execute: {
+                                if self.imagelabel == nil {
+                                    // CGRectMake has been deprecated - and should be let, not var
+                                    self.imagelabel = UILabel(frame: CGRect(x: 0, y: 0, width: 300, height: 36))
+                                    // you will probably want to set the font (remember to use Dynamic Type!)
+                                    self.imagelabel?.font = self.imagelabel?.font.withSize(36)
+                                    // and set the text color too - remember good contrast
+                                    self.imagelabel?.textColor = .white
+                                    // may not be necessary (e.g., if the width & height match the superview)
+                                    // if you do need to center, CGPointMake has been deprecated, so use this
+                                    self.imagelabel?.center = CGPoint(x: 180, y: 50)
+                                    // this changed in Swift 3 (much better, no?)
+                                    self.imagelabel?.textAlignment = .center
+                                }
+                                self.imagelabel?.isHidden = false
+                                self.imagelabel?.text = responseString as String?
+                                self.view.addSubview(self.imagelabel!)
+                            })
                         }
-                        
                         task.resume()
                     }
                     
                 }
-                
                 task.resume()
         }
     }
