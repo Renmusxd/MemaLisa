@@ -154,7 +154,7 @@ def getClasses(dirname,cachedir):
     data = []
     i = 0
     for classdir in os.listdir(dirname):
-        if os.path.isdir(os.path.join(dirname,classdir)) and classdir[0]!='.':
+        if os.path.isdir(os.path.join(dirname,classdir)) and classdir[0]!='_':
             print("[*] Loading from {}".format(classdir))
             classes.append(classdir)
             for image in os.listdir(os.path.join(dirname,classdir)):
