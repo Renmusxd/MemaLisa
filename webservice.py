@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 from classifierFactory import *
 from scipy import misc
+import numpy
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -24,13 +25,20 @@ def getJS(filepath):
 def getCSS(filepath):
     return redirect(url_for('static', filename='css/' + filepath))
 
+@app.route('/api/vector/<dir>/<filepath>', methods=['GET'])
+def vectorImageAPI(dir,filepath):
+    cachename = os.path.join("cache", dir, filepath+".npy")
+    if os.path.exists(cachename):
+        vec = numpy.load(cachename)
+        return "[<br/>"+(",<br/>".join([str(x) for x in vec[0]]))+"<br/>]"
+    return "Not found", 404
+
 @app.route('/api/classify/<filepath>', methods=['GET'])
 def classifyImageAPI(filepath):
     filename = os.path.join("uploads",secure_filename(filepath))
     imagearr = misc.imread(filename)
     imclass = classifier.classifyImage(imagearr)
     return imclass
-
 
 @app.route('/api/classify', methods=['POST'])
 def uploadImageAPI():
