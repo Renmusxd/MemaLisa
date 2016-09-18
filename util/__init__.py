@@ -216,9 +216,9 @@ def getClasses(dirname,cachedir,limit=None):
                 countdown -= 1
                 #function_args.append((dirname,classdir,image,cachedir,labels,data,i))
                 l, v = processImage(dirname,classdir,image,cachedir,labels,data,i)
-                if l:
+                if l is not None:
                     labels.append(l)
-                if v:
+                if v is not None:
                     data.append(v)
             i += 1
 

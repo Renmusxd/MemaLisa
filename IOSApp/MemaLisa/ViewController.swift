@@ -143,7 +143,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                     // you will probably want to set the font (remember to use Dynamic Type!)
                                     self.imagelabel?.font = self.imagelabel?.font.withSize(36)
                                     // and set the text color too - remember good contrast
-                                    self.imagelabel?.textColor = .white
+                                    self.imagelabel?.textColor = .black
                                     // may not be necessary (e.g., if the width & height match the superview)
                                     // if you do need to center, CGPointMake has been deprecated, so use this
                                     self.imagelabel?.center = CGPoint(x: 180, y: 50)
