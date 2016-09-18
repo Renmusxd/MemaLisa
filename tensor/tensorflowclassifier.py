@@ -9,6 +9,7 @@ import numpy as np
 import random
 from PIL import Image
 import tensorflow as tf
+from util import imageLabelFilenames
 
 # See http://stackoverflow.com/questions/34694965/image-recognition-using-tensorflow
 
@@ -25,10 +26,32 @@ flags.DEFINE_integer('batch_size', 8, 'Batch size.  '
 flags.DEFINE_string('train_dir', 'data', 'Directory to put the training data.')
 flags.DEFINE_boolean('fake_data', False, 'If true, uses fake data '
                      'for unit testing.')
-NUM_CLASSES = 2
-IMAGE_SIZE = 64
+
+IMAGE_SIZE = 128
 CHANNELS = 3
 IMAGE_PIXELS = IMAGE_SIZE * IMAGE_SIZE * CHANNELS
+
+# Get the sets of images and labels for training, validation, and
+train_images = []
+# filenames = ['data/white/01.jpg', 'data/black/02.jpg', 'data/white/03.jpg',
+#              'data/black/04.jpg', 'data/white/05.jpg', 'data/black/06.jpg',
+#              'data/white/07.jpg', 'data/black/08.jpg']
+#
+# label = [0,1,0,1,0,1,0,1]
+
+classes, label, filenames = imageLabelFilenames('data')
+NUM_CLASSES = len(classes)
+NUM_IMAGES = len(filenames)
+
+for filename in filenames:
+    image = Image.open(filename)
+    image = image.resize((IMAGE_SIZE,IMAGE_SIZE))
+    train_images.append(numpy.array(image))
+
+train_images = np.array(train_images)
+train_images = train_images.reshape(NUM_IMAGES,IMAGE_PIXELS)
+
+train_labels = np.array(label)
 
 
 def inference(images, hidden1_units, hidden2_units):
@@ -101,7 +124,7 @@ def do_eval(sess,
             data_set):
     # And run one epoch of eval.
     true_count = 0  # Counts the number of correct predictions.
-    steps_per_epoch = 8 // FLAGS.batch_size
+    steps_per_epoch = NUM_IMAGES // FLAGS.batch_size
     num_examples = steps_per_epoch * FLAGS.batch_size
     for _ in xrange(steps_per_epoch):
         feed_dict = fill_feed_dict(train_images,train_labels,
@@ -112,29 +135,12 @@ def do_eval(sess,
     print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' %
         (num_examples, true_count, precision))
 
-# Get the sets of images and labels for training, validation, and
-train_images = []
-filenames = ['data/white/01.jpg', 'data/black/02.jpg', 'data/white/03.jpg',
-             'data/black/04.jpg', 'data/white/05.jpg', 'data/black/06.jpg',
-             'data/white/07.jpg', 'data/black/08.jpg']
-
-for filename in filenames:
-    image = Image.open(filename)
-    image = image.resize((IMAGE_SIZE,IMAGE_SIZE))
-    train_images.append(np.array(image))
-
-train_images = np.array(train_images)
-train_images = train_images.reshape(len(filenames),IMAGE_PIXELS)
-
-label = [0,1,0,1,0,1,0,1]
-train_labels = np.array(label)
-
 
 def run_training():
     # Tell TensorFlow that the model will be built into the default Graph.
     with tf.Graph().as_default():
         # Generate placeholders for the images and labels.
-        images_placeholder, labels_placeholder = placeholder_inputs(8)
+        images_placeholder, labels_placeholder = placeholder_inputs(NUM_IMAGES)
 
         # Build a Graph that computes predictions from the inference model.
         logits = inference(images_placeholder,
