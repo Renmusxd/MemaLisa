@@ -58,7 +58,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     @IBAction func identifyImage(sender: AnyObject){
         if (imageView.image != nil){
-                let url = NSURL(string: "http://192.168.0.23:1708/api/classify")
+                let url = NSURL(string: "http://10.128.1.194:1708/api/classify")
                 
                 let request = NSMutableURLRequest(url: url! as URL)
                 request.httpMethod = "POST"
@@ -118,7 +118,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     print(dataString)
                     
                     if (dataString) != nil{
-                        let clasurl = NSURL(string: "http://192.168.0.23:1708/api/classify/"+(dataString! as String))
+                        let clasurl = NSURL(string: "http://10.128.1.194:1708/api/classify/"+(dataString! as String))
                         let request = NSMutableURLRequest(url:clasurl as! URL);
                         request.httpMethod = "GET"
                         

@@ -192,7 +192,7 @@ def imageLabelFilenames(dirname):
             i += 1
     return classes, labels, data
 
-def getClasses(dirname,cachedir):
+def getClasses(dirname,cachedir,limit=None):
     print("[*] Loading training data")
     classes = []
     labels = []
@@ -206,10 +206,14 @@ def getClasses(dirname,cachedir):
         imagevectorize(arr)
 
     for classdir in os.listdir(dirname):
+        countdown = limit if limit is not None else -1
         if os.path.isdir(os.path.join(dirname,classdir)) and classdir[0]!='_':
             print("[*] Loading from {}".format(classdir))
             classes.append(classdir)
             for image in os.listdir(os.path.join(dirname,classdir)):
+                if countdown == 0:
+                    break
+                countdown -= 1
                 #function_args.append((dirname,classdir,image,cachedir,labels,data,i))
                 l, v = processImage(dirname,classdir,image,cachedir,labels,data,i)
                 labels.append(l)
