@@ -38,6 +38,8 @@ def classifyImageAPI(filepath):
     filename = os.path.join("uploads",secure_filename(filepath))
     imagearr = misc.imread(filename)
     imclass = classifier.classifyImage(imagearr)
+    if '+' in imclass:
+        imclass = imclass[:imclass.index('+')]
     return imclass
 
 @app.route('/api/classify', methods=['POST'])
@@ -57,6 +59,8 @@ def classifyImage(filepath):
     filename = os.path.join("uploads",secure_filename(filepath))
     imagearr = misc.imread(filename)
     imclass = classifier.classifyImage(imagearr)
+    if '+' in imclass:
+        imclass = imclass[:imclass.index('+')]
     return render_template('classification.html',imclass=imclass)
 
 
